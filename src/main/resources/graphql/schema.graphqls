@@ -1,93 +1,330 @@
+# VirtualGR - Sistema de Gestión de Tareas Ágiles
+# GraphQL API Schema Definition Language (SDL)
+
+# ===== TIPOS DE DATOS =====
+
+"""
+Usuario del sistema - puede ser estudiante o profesor
+"""
 type Usuario {
-    id: ID!
-    nombre: String!
-    email: String!
-    rol: String!
-    fechaCreacion: String!
-    ultimoAcceso: String
-    miembrosEquipo: [MiembroEquipo!]!
-    equiposCreados: [Equipo!]!
-    tareasCreadas: [Tarea!]!
-    tareasAsignadas: [Tarea!]!
+"""ID único del usuario"""
+id: ID!
+"""Nombre completo del usuario"""
+nombre: String!
+"""Email institucional (@udea.edu.co)"""
+email: String!
+"""Rol global en el sistema"""
+rol: RolGlobal!
+"""Fecha de creación de la cuenta"""
+fechaCreacion: String!
+"""Último acceso al sistema"""
+ultimoAcceso: String
+"""Equipos donde el usuario es miembro"""
+miembrosEquipo: [MiembroEquipo!]!
+"""Equipos creados por el usuario"""
+equiposCreados: [Equipo!]!
+"""Tareas creadas por el usuario"""
+tareasCreadas: [Tarea!]!
+"""Tareas asignadas al usuario"""
+tareasAsignadas: [Tarea!]!
 }
 
+"""
+Equipo de trabajo formado por estudiantes
+"""
 type Equipo {
-    id: ID!
-    nombre: String!
-    fechaCreacion: String!
-    creador: Usuario!
-    miembros: [MiembroEquipo!]!
-    proyectos: [Proyecto!]!
+"""ID único del equipo"""
+id: ID!
+"""Nombre del equipo (debe ser único)"""
+nombre: String!
+"""Fecha de creación del equipo"""
+fechaCreacion: String!
+"""Usuario que creó el equipo"""
+creador: Usuario!
+"""Lista de miembros del equipo"""
+miembros: [MiembroEquipo!]!
+"""Proyectos asignados al equipo"""
+proyectos: [Proyecto!]!
 }
 
+"""
+Relación entre usuario y equipo con rol específico
+"""
 type MiembroEquipo {
-    id: ID!
-    equipo: Equipo!
-    usuario: Usuario!
-    rol: String!
-    fechaIncorporacion: String!
+"""ID único de la membresía"""
+id: ID!
+"""Equipo al que pertenece"""
+equipo: Equipo!
+"""Usuario miembro del equipo"""
+usuario: Usuario!
+"""Rol del usuario en el equipo"""
+rol: RolEquipo!
+"""Fecha de incorporación al equipo"""
+fechaIncorporacion: String!
 }
 
+"""
+Proyecto específico dentro de un equipo
+"""
 type Proyecto {
-    id: ID!
-    nombre: String!
-    descripcion: String
-    equipo: Equipo!
-    estado: String!
-    fechaInicio: String
-    fechaFinPrevista: String
-    fechaCompletado: String
-    tareas: [Tarea!]!
+"""ID único del proyecto"""
+id: ID!
+"""Nombre del proyecto"""
+nombre: String!
+"""Descripción detallada del proyecto"""
+descripcion: String
+"""Equipo responsable del proyecto"""
+equipo: Equipo!
+"""Estado actual del proyecto"""
+estado: EstadoProyecto!
+"""Fecha de inicio del proyecto"""
+fechaInicio: String
+"""Fecha estimada de finalización"""
+fechaFinPrevista: String
+"""Fecha real de finalización"""
+fechaCompletado: String
+"""Tareas del proyecto"""
+tareas: [Tarea!]!
 }
 
+"""
+Tarea específica dentro de un proyecto
+"""
 type Tarea {
-    id: ID!
-    titulo: String!
-    descripcion: String
-    proyecto: Proyecto!
-    creadaPor: Usuario!
-    asignadaA: Usuario
-    estado: String!
-    prioridad: String!
-    fechaCreacion: String!
-    fechaEntrega: String
-    fechaCompletado: String
+"""ID único de la tarea"""
+id: ID!
+"""Título descriptivo de la tarea"""
+titulo: String!
+"""Descripción detallada de la tarea"""
+descripcion: String
+"""Proyecto al que pertenece la tarea"""
+proyecto: Proyecto!
+"""Usuario que creó la tarea"""
+creadaPor: Usuario!
+"""Usuario asignado para realizar la tarea"""
+asignadaA: Usuario
+"""Estado actual de la tarea"""
+estado: EstadoTarea!
+"""Nivel de prioridad de la tarea"""
+prioridad: PrioridadTarea!
+"""Fecha de creación de la tarea"""
+fechaCreacion: String!
+"""Fecha límite para completar la tarea"""
+fechaEntrega: String
+"""Fecha en que se completó la tarea"""
+fechaCompletado: String
 }
 
+# ===== ENUMS =====
+
+"""
+Rol global del usuario en el sistema
+"""
+enum RolGlobal {
+"""Usuario estudiante"""
+ESTUDIANTE
+"""Usuario profesor"""
+PROFESOR
+}
+
+"""
+Rol del usuario dentro de un equipo específico
+"""
+enum RolEquipo {
+"""Miembro regular del equipo"""
+MIEMBRO
+"""Líder del equipo"""
+LIDER
+}
+
+"""
+Estados posibles de un proyecto
+"""
+enum EstadoProyecto {
+"""Proyecto pendiente de iniciar"""
+PENDIENTE
+"""Proyecto en desarrollo"""
+EN_PROGRESO
+"""Proyecto completado"""
+COMPLETADO
+}
+
+"""
+Estados posibles de una tarea
+"""
+enum EstadoTarea {
+"""Tarea pendiente de iniciar"""
+PENDIENTE
+"""Tarea en desarrollo"""
+EN_PROGRESO
+"""Tarea en revisión"""
+REVISION
+"""Tarea completada"""
+COMPLETADA
+}
+
+"""
+Niveles de prioridad para las tareas
+"""
+enum PrioridadTarea {
+"""Prioridad baja"""
+BAJA
+"""Prioridad media"""
+MEDIA
+"""Prioridad alta"""
+ALTA
+}
+
+# ===== QUERIES =====
+
+"""
+Consultas disponibles en el sistema
+"""
 type Query {
-    allUsuarios: [Usuario]
-    usuarioById(id: ID!): Usuario
-    usuarioByEmail(email: String!): Usuario
+# Consultas de Usuarios
+"""Obtener todos los usuarios del sistema"""
+allUsuarios: [Usuario]
+"""Obtener usuario por ID"""
+usuarioById(id: ID!): Usuario
+"""Obtener usuario por email"""
+usuarioByEmail(email: String!): Usuario
 
-    allEquipos: [Equipo]
-    equipoById(id: ID!): Equipo
-    miembrosEquipo(equipoId: ID!): [MiembroEquipo]
+# Consultas de Equipos
+"""Obtener todos los equipos"""
+allEquipos: [Equipo]
+"""Obtener equipo por ID"""
+equipoById(id: ID!): Equipo
+"""Obtener miembros de un equipo específico"""
+miembrosEquipo(equipoId: ID!): [MiembroEquipo]
 
-    allProyectos: [Proyecto]
-    proyectoById(id: ID!): Proyecto
-    proyectosByEquipo(equipoId: ID!): [Proyecto]
+# Consultas de Proyectos
+"""Obtener todos los proyectos"""
+allProyectos: [Proyecto]
+"""Obtener proyecto por ID"""
+proyectoById(id: ID!): Proyecto
+"""Obtener proyectos de un equipo específico"""
+proyectosByEquipo(equipoId: ID!): [Proyecto]
 
-    allTareas: [Tarea]
-    tareaById(id: ID!): Tarea
-    tareasByProyecto(proyectoId: ID!): [Tarea]
-    tareasAsignadasA(usuarioId: ID!): [Tarea]
+# Consultas de Tareas
+"""Obtener todas las tareas"""
+allTareas: [Tarea]
+"""Obtener tarea por ID"""
+tareaById(id: ID!): Tarea
+"""Obtener tareas de un proyecto específico"""
+tareasByProyecto(proyectoId: ID!): [Tarea]
+"""Obtener tareas asignadas a un usuario"""
+tareasAsignadasA(usuarioId: ID!): [Tarea]
 }
 
+# ===== MUTATIONS =====
+
+"""
+Mutaciones disponibles en el sistema
+"""
 type Mutation {
-    createUsuario(nombre: String!, email: String!, password: String!, rol: String!): Usuario
-    updateUsuario(id: ID!, nombre: String, email: String): Usuario
-    deleteUsuario(id: ID!): Boolean
+# Mutaciones de Usuarios
+"""Crear un nuevo usuario en el sistema"""
+createUsuario(
+"""Nombre completo del usuario"""
+nombre: String!
+"""Email institucional (@udea.edu.co)"""
+email: String!
+"""Contraseña del usuario"""
+password: String!
+"""Rol del usuario (ESTUDIANTE o PROFESOR)"""
+rol: String!
+): Usuario
 
-    createEquipo(nombre: String!, creadorId: ID!): Equipo
-    addMiembroEquipo(equipoId: ID!, usuarioId: ID!, rol: String!): MiembroEquipo
+"""Actualizar información de un usuario"""
+updateUsuario(
+"""ID del usuario a actualizar"""
+id: ID!
+"""Nuevo nombre (opcional)"""
+nombre: String
+"""Nuevo email (opcional)"""
+email: String
+): Usuario
 
-    createProyecto(nombre: String!, descripcion: String, equipoId: ID!,
-        fechaInicio: String!, fechaFinPrevista: String!): Proyecto
-    updateEstadoProyecto(id: ID!, estado: String!): Proyecto
+"""Eliminar un usuario del sistema"""
+deleteUsuario(
+"""ID del usuario a eliminar"""
+id: ID!
+): Boolean
 
-    createTarea(titulo: String!, descripcion: String, proyectoId: ID!,
-        creadaPorId: ID!, asignadaAId: ID, prioridad: String!,
-        fechaEntrega: String!): Tarea
-    updateEstadoTarea(id: ID!, estado: String!): Tarea
-    asignarTarea(tareaId: ID!, usuarioId: ID!): Tarea
+# Mutaciones de Equipos
+"""Crear un nuevo equipo"""
+createEquipo(
+"""Nombre del equipo (único)"""
+nombre: String!
+"""ID del usuario que crea el equipo"""
+creadorId: ID!
+): Equipo
+
+"""Agregar un miembro a un equipo"""
+addMiembroEquipo(
+"""ID del equipo"""
+equipoId: ID!
+"""ID del usuario a agregar"""
+usuarioId: ID!
+"""Rol en el equipo (MIEMBRO o LIDER)"""
+rol: String!
+): MiembroEquipo
+
+# Mutaciones de Proyectos
+"""Crear un nuevo proyecto"""
+createProyecto(
+"""Nombre del proyecto"""
+nombre: String!
+"""Descripción del proyecto"""
+descripcion: String
+"""ID del equipo responsable"""
+equipoId: ID!
+"""Fecha de inicio (ISO 8601)"""
+fechaInicio: String!
+"""Fecha estimada de finalización (ISO 8601)"""
+fechaFinPrevista: String!
+): Proyecto
+
+"""Actualizar el estado de un proyecto"""
+updateEstadoProyecto(
+"""ID del proyecto"""
+id: ID!
+"""Nuevo estado (PENDIENTE, EN_PROGRESO, COMPLETADO)"""
+estado: String!
+): Proyecto
+
+# Mutaciones de Tareas
+"""Crear una nueva tarea"""
+createTarea(
+"""Título de la tarea"""
+titulo: String!
+"""Descripción de la tarea"""
+descripcion: String
+"""ID del proyecto al que pertenece"""
+proyectoId: ID!
+"""ID del usuario que crea la tarea"""
+creadaPorId: ID!
+"""ID del usuario asignado (opcional)"""
+asignadaAId: ID
+"""Prioridad (BAJA, MEDIA, ALTA)"""
+prioridad: String!
+"""Fecha límite de entrega (ISO 8601)"""
+fechaEntrega: String!
+): Tarea
+
+"""Actualizar el estado de una tarea"""
+updateEstadoTarea(
+"""ID de la tarea"""
+id: ID!
+"""Nuevo estado (PENDIENTE, EN_PROGRESO, REVISION, COMPLETADA)"""
+estado: String!
+): Tarea
+
+"""Asignar una tarea a un usuario"""
+asignarTarea(
+"""ID de la tarea"""
+tareaId: ID!
+"""ID del usuario a asignar"""
+usuarioId: ID!
+): Tarea
 }
