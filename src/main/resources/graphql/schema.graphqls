@@ -1,0 +1,93 @@
+type Usuario {
+    id: ID!
+    nombre: String!
+    email: String!
+    rol: String!
+    fechaCreacion: String!
+    ultimoAcceso: String
+    miembrosEquipo: [MiembroEquipo!]!
+    equiposCreados: [Equipo!]!
+    tareasCreadas: [Tarea!]!
+    tareasAsignadas: [Tarea!]!
+}
+
+type Equipo {
+    id: ID!
+    nombre: String!
+    fechaCreacion: String!
+    creador: Usuario!
+    miembros: [MiembroEquipo!]!
+    proyectos: [Proyecto!]!
+}
+
+type MiembroEquipo {
+    id: ID!
+    equipo: Equipo!
+    usuario: Usuario!
+    rol: String!
+    fechaIncorporacion: String!
+}
+
+type Proyecto {
+    id: ID!
+    nombre: String!
+    descripcion: String
+    equipo: Equipo!
+    estado: String!
+    fechaInicio: String
+    fechaFinPrevista: String
+    fechaCompletado: String
+    tareas: [Tarea!]!
+}
+
+type Tarea {
+    id: ID!
+    titulo: String!
+    descripcion: String
+    proyecto: Proyecto!
+    creadaPor: Usuario!
+    asignadaA: Usuario
+    estado: String!
+    prioridad: String!
+    fechaCreacion: String!
+    fechaEntrega: String
+    fechaCompletado: String
+}
+
+type Query {
+    allUsuarios: [Usuario]
+    usuarioById(id: ID!): Usuario
+    usuarioByEmail(email: String!): Usuario
+
+    allEquipos: [Equipo]
+    equipoById(id: ID!): Equipo
+    miembrosEquipo(equipoId: ID!): [MiembroEquipo]
+
+    allProyectos: [Proyecto]
+    proyectoById(id: ID!): Proyecto
+    proyectosByEquipo(equipoId: ID!): [Proyecto]
+
+    allTareas: [Tarea]
+    tareaById(id: ID!): Tarea
+    tareasByProyecto(proyectoId: ID!): [Tarea]
+    tareasAsignadasA(usuarioId: ID!): [Tarea]
+}
+
+type Mutation {
+    createUsuario(nombre: String!, email: String!, password: String!, rol: String!): Usuario
+    updateUsuario(id: ID!, nombre: String, email: String): Usuario
+    deleteUsuario(id: ID!): Boolean
+
+    createEquipo(nombre: String!, creadorId: ID!): Equipo
+    addMiembroEquipo(equipoId: ID!, usuarioId: ID!, rol: String!): MiembroEquipo
+
+    createProyecto(nombre: String!, descripcion: String, equipoId: ID!,
+        fechaInicio: String!, fechaFinPrevista: String!): Proyecto
+    updateEstadoProyecto(id: ID!, estado: String!): Proyecto
+
+    createTarea(titulo: String!, descripcion: String, proyectoId: ID!,
+        creadaPorId: ID!, asignadaAId: ID, prioridad: String!,
+        fechaEntrega: String!): Tarea
+    updateEstadoTarea(id: ID!, estado: String!): Tarea
+    asignarTarea(tareaId: ID!, usuarioId: ID!): Tarea
+}
